@@ -522,7 +522,7 @@ void Targeted_Run(double Tpars[][4], int tf, bool lock_homes, bool quarantine_wh
               n[from]--; n[to]++;            // Change the values of n[from] and n[to]
 
               if(is_confined[ind[j]]==true){
-                  // printf("Moved %s to %s conf_in_state_in_loc\n",states[from],states[to] );
+
                   conf_by_state_in_loc[from]--;      // change the number of confined in different states accordingly
                   conf_by_state_in_loc[to]++;
 
@@ -553,7 +553,7 @@ void Targeted_Run(double Tpars[][4], int tf, bool lock_homes, bool quarantine_wh
               }
               else if(from==H && to == R){
                 // Remove confinement and move them home
-//                  is_confined[ind[j]] = false; // Remove confinement
+                 is_confined[ind[j]] = false; // Remove confinement
 
                  // Send recovered who were hospitalised home
                 n_per_location[ pop[ind[j]][3] ][R]--; // Decrement number of k (=R) in current locations
@@ -595,7 +595,7 @@ void Targeted_Run(double Tpars[][4], int tf, bool lock_homes, bool quarantine_wh
     if(t>=day+1){
 
 
-            /************* TARGETTED TESTING ******************/
+            /************* TARGETED TESTING ******************/
 
             if(n[R]>=begin_at/100 * n_pop){
 
@@ -619,7 +619,7 @@ void Targeted_Run(double Tpars[][4], int tf, bool lock_homes, bool quarantine_wh
                 if((pop[i][0]==MI||pop[i][0]==SI) && day>=next_test_date[i] && being_tested[i]==false && is_confined[i]==false){
                   list_of_sym[n_sym] = i; n_sym++;
 
-                  // NEW: (CHECK!!!) Retesting symptomatics (possible problem: they may not have been SI or MI when they were tested a week ago!)
+                  // Retesting symptomatics who received a negative RAT test a week ago
                   if(day>=result_declared_date[i]+7 && last_test_type[i]==0 && last_test_result[i]==-1){sym_rat_neg[n_srn] = i; n_srn++;} // Make separate list of symptomatics who
                                                                                                                                           // last tested negative on a RAT, more than 7 days ago
                 }
@@ -638,16 +638,16 @@ void Targeted_Run(double Tpars[][4], int tf, bool lock_homes, bool quarantine_wh
 
 
               if(n_sym>0){
-                int targetted_tests_done_today =   std::min(tests_remaining_today,n_sym);  // Tests done this dt is the minimum of the tests available and
+                int targeted_tests_done_today =   std::min(tests_remaining_today,n_sym);  // Tests done this dt is the minimum of the tests available and
                                                                                            // the people to be tested. As the day progresses, the tests
                                                                                            // available drops lower until it's 0, and no testing happens.
 
                 shuffle(0, n_sym, list_of_sym); // Shuffle list of people to be tested.
 
-                // for(int lo=targetted_tests_done_today;lo<n_sym;lo++){ list_of_remaining[n_remaining] = list_of_sym[lo];n_remaining++; } // Add those who couldn't be tested to the n_remaining
+                // for(int lo=targeted_tests_done_today;lo<n_sym;lo++){ list_of_remaining[n_remaining] = list_of_sym[lo];n_remaining++; } // Add those who couldn't be tested to the n_remaining
                                                                                                                                         // (this is a little pointess: if there are enough tests_conducted
-                                                                                                                                        // targetted individuals will always be tested, until no tests
-                                                                                                                                        // remain. Meaning if these people couldn't be tested in targetted TESTING
+                                                                                                                                        // targeted individuals will always be tested, until no tests
+                                                                                                                                        // remain. Meaning if these people couldn't be tested in targeted testing
                                                                                                                                         // no random testing is going to happen! But anyway....)
 
                 // list_of_remaining[n_remaining] = -1;  // Reset position of -1 to mark new end of this array
@@ -668,7 +668,7 @@ void Targeted_Run(double Tpars[][4], int tf, bool lock_homes, bool quarantine_wh
                   }
 
 
-                for(int j=0; j<targetted_tests_done_today;j++){
+                for(int j=0; j<targeted_tests_done_today;j++){
 
                   int si = list_of_sym[j];  // Individual to test
 
@@ -689,7 +689,7 @@ void Targeted_Run(double Tpars[][4], int tf, bool lock_homes, bool quarantine_wh
                       loc_confined_time[pop[si][1]] = day;
                     }
 
-                    // Targetted testing using HQ tests unless there are none
+                    // Targeted testing using HQ tests unless there are none
                     int test_type = 1;
 
                     if(hq_tests_today<=0){test_type = 0;} // If no HQ tests available, give them LQ (one of the two is guaranteed, since tests_remaining_today>0)
@@ -753,7 +753,7 @@ void Targeted_Run(double Tpars[][4], int tf, bool lock_homes, bool quarantine_wh
 
                     int ri = list_of_remaining[j];           // Individual to test
 
-                    // ** THE PART BELOW EXCEPT FOR SELECTING TESTS IS ESSENTIALLY THE SAME AS FOR TARGETTED TESTING (with si -> ri)
+                    // ** THE PART BELOW EXCEPT FOR SELECTING TESTS IS ESSENTIALLY THE SAME AS FOR TARGETED TESTING (with si -> ri)
 
                     being_tested[ri] = true; tests_conducted++; tests_remaining_today--;
 
@@ -868,7 +868,7 @@ void Targeted_Run(double Tpars[][4], int tf, bool lock_homes, bool quarantine_wh
 
                   /******** Remove confinement if 14 days have passed ********/
 
-                  if(is_confined[i]==true && day >= person_isolated_time[i]+total_isolation_time){ // NEW: changed 14 -> total_isolation_time
+                  if(is_confined[i]==true && day >= person_isolated_time[i]+total_isolation_time){ // total_isolation_time = 14 days
                     is_confined[i]=false;
                     person_isolated_time[i] = -1000;
                   }
@@ -947,7 +947,7 @@ void Targeted_Run(double Tpars[][4], int tf, bool lock_homes, bool quarantine_wh
   writetofile(output, tf, Tpars, begin_at, test_frac,cpu_time_used,details,iter);
 
 
-}// End of TargettedTesting function.
+}// End of TargetedTesting function.
 
 void createHeatmap(int mc_runs, int tf, double begin_at, double lock_homes, double quarantine_when_sample_taken, double Tpars[][4]){
 
