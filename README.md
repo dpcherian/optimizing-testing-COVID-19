@@ -53,7 +53,7 @@ The global variable `quarantine_confined` is `true` by default, it decides if in
 
 - `iter` is a number to mark different Monte Carlo runs, to avoid overwriting the output files.
 
-### main()
+### `main()`
 
 This function defines the exit rates from each compartment, as well as the rate array. It also defines the testing parameters (specificity, sensitivity, delays, all defined in `Tpars`), and the simulation time (`tf`). Currently, the `main()` function runs one single Monte Carlo run, but this can be modified using a simple for loop. A single Monte Carlo run takes roughly 10 seconds to complete. Alternatively, the function `create_heatmap` can be called to create a single heatmap as shown in the paper, for a given number of `mc_runs`. A heatmap with `mc_runs=1` takes roughly 90 minutes to run.
 
